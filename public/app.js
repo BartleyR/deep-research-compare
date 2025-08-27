@@ -55,8 +55,17 @@ async function handleSubmit(e) {
         formData.append('models', JSON.stringify(modelSelections));
     }
     
+    // Add files to FormData
     for (let i = 0; i < files.length; i++) {
         formData.append('files', files[i]);
+    }
+    
+    // Log file info for debugging
+    if (files.length > 0) {
+        console.log(`Uploading ${files.length} file(s):`);
+        for (let i = 0; i < files.length; i++) {
+            console.log(`- ${files[i].name} (${files[i].type || 'unknown type'})`);
+        }
     }
     
     try {
@@ -67,7 +76,10 @@ async function handleSubmit(e) {
             body: formData
         });
         
-        if (!response.ok) throw new Error('Failed to submit research');
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to submit research');
+        }
         
         const { requestId } = await response.json();
         currentRequestId = requestId;
