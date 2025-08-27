@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Research Compare</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Deep Research Compare</h1>
+        
+        <nav class="main-nav">
+            <button class="nav-btn active" data-section="config">Configuration</button>
+            <button class="nav-btn" data-section="research">Research</button>
+            <button class="nav-btn" data-section="history">History</button>
+        </nav>
+
+        <!-- Configuration Section -->
+        <div id="config-section" class="section active">
+            <h2>API Configuration & Testing</h2>
+            
+            <div class="api-status-grid">
+                <div class="api-card" data-provider="ChatGPT">
+                    <h3>ChatGPT (OpenAI)</h3>
+                    <div class="api-status">
+                        <span class="status-indicator" id="api-status-ChatGPT">⚪</span>
+                        <span class="status-text" id="api-text-ChatGPT">Not Configured</span>
+                    </div>
+                    <div class="model-selection">
+                        <label for="model-ChatGPT">Model:</label>
+                        <select id="model-ChatGPT" class="model-select">
+                            <option value="">Loading models...</option>
+                        </select>
+                    </div>
+                    <button class="test-btn" data-provider="ChatGPT">Test Connection</button>
+                    <div class="test-result" id="test-result-ChatGPT"></div>
+                </div>
+
+                <div class="api-card" data-provider="Claude">
+                    <h3>Claude (Anthropic)</h3>
+                    <div class="api-status">
+                        <span class="status-indicator" id="api-status-Claude">⚪</span>
+                        <span class="status-text" id="api-text-Claude">Not Configured</span>
+                    </div>
+                    <div class="model-selection">
+                        <label for="model-Claude">Model:</label>
+                        <select id="model-Claude" class="model-select">
+                            <option value="">Loading models...</option>
+                        </select>
+                    </div>
+                    <button class="test-btn" data-provider="Claude">Test Connection</button>
+                    <div class="test-result" id="test-result-Claude"></div>
+                </div>
+
+                <div class="api-card" data-provider="Perplexity">
+                    <h3>Perplexity</h3>
+                    <div class="api-status">
+                        <span class="status-indicator" id="api-status-Perplexity">⚪</span>
+                        <span class="status-text" id="api-text-Perplexity">Not Configured</span>
+                    </div>
+                    <div class="model-selection">
+                        <label for="model-Perplexity">Model:</label>
+                        <select id="model-Perplexity" class="model-select">
+                            <option value="">Loading models...</option>
+                        </select>
+                    </div>
+                    <button class="test-btn" data-provider="Perplexity">Test Connection</button>
+                    <div class="test-result" id="test-result-Perplexity"></div>
+                </div>
+
+                <div class="api-card" data-provider="Gemini">
+                    <h3>Gemini (Google)</h3>
+                    <div class="api-status">
+                        <span class="status-indicator" id="api-status-Gemini">⚪</span>
+                        <span class="status-text" id="api-text-Gemini">Not Configured</span>
+                    </div>
+                    <div class="model-selection">
+                        <label for="model-Gemini">Model:</label>
+                        <select id="model-Gemini" class="model-select">
+                            <option value="">Loading models...</option>
+                        </select>
+                    </div>
+                    <button class="test-btn" data-provider="Gemini">Test Connection</button>
+                    <div class="test-result" id="test-result-Gemini"></div>
+                </div>
+            </div>
+
+            <div class="config-info">
+                <h3>Configuration Instructions</h3>
+                <p>To configure API keys, create a <code>.env</code> file in the project root with the following:</p>
+                <pre>
+OPENAI_API_KEY=your_openai_api_key_here
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+GOOGLE_AI_API_KEY=your_google_ai_api_key_here
+PERPLEXITY_API_KEY=your_perplexity_api_key_here</pre>
+                <p>After adding or updating API keys, restart the server for changes to take effect.</p>
+            </div>
+        </div>
+
+        <!-- Research Section -->
+        <div id="research-section" class="section">
+            <div class="input-section">
+                <h2>Submit Research Request</h2>
+                <div class="active-providers-info" id="activeProvidersInfo"></div>
+                
+                <div class="research-provider-selection" id="researchProviderSelection">
+                    <h3>Provider & Model Selection</h3>
+                    <div class="provider-selection-grid" id="providerSelectionGrid">
+                        <!-- Provider and model selectors will be populated dynamically -->
+                    </div>
+                </div>
+                
+                <form id="researchForm">
+                    <textarea id="prompt" placeholder="Enter your research prompt..." required></textarea>
+                    <div class="file-input">
+                        <label for="files">Upload context files (optional):</label>
+                        <input type="file" id="files" multiple />
+                    </div>
+                    <button type="submit">Submit to All Researchers</button>
+                </form>
+            </div>
+
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Gathering responses from all researchers...</p>
+                <div class="progress-container">
+                    <div class="provider-status" id="status-ChatGPT">
+                        <span class="provider-name">ChatGPT</span>
+                        <span class="status-icon">⏳</span>
+                        <span class="status-text">Waiting...</span>
+                    </div>
+                    <div class="provider-status" id="status-Claude">
+                        <span class="provider-name">Claude</span>
+                        <span class="status-icon">⏳</span>
+                        <span class="status-text">Waiting...</span>
+                    </div>
+                    <div class="provider-status" id="status-Perplexity">
+                        <span class="provider-name">Perplexity</span>
+                        <span class="status-icon">⏳</span>
+                        <span class="status-text">Waiting...</span>
+                    </div>
+                    <div class="provider-status" id="status-Gemini">
+                        <span class="provider-name">Gemini</span>
+                        <span class="status-icon">⏳</span>
+                        <span class="status-text">Waiting...</span>
+                    </div>
+                </div>
+                <div class="overall-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">0/4 completed</span>
+                </div>
+            </div>
+
+            <div id="results" class="results-section" style="display: none;">
+                <h2>Research Comparison</h2>
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="side-by-side">Side by Side</button>
+                    <button class="tab-btn" data-tab="individual">Individual View</button>
+                    <button class="tab-btn" data-tab="evaluation">Evaluation</button>
+                </div>
+
+                <div id="side-by-side" class="tab-content active">
+                    <div class="responses-grid"></div>
+                </div>
+
+                <div id="individual" class="tab-content">
+                    <select id="providerSelect">
+                        <option value="">Select a provider</option>
+                    </select>
+                    <div class="individual-response"></div>
+                </div>
+
+                <div id="evaluation" class="tab-content">
+                    <div class="auto-analysis-section">
+                        <div class="analysis-header">
+                            <h3>Automatic Analysis</h3>
+                            <button id="analyzeResponses" class="analyze-btn">Analyze Differences</button>
+                        </div>
+                        
+                        <div id="analysisResults" class="analysis-results" style="display: none;">
+                            <div class="analysis-loading" id="analysisLoading" style="display: none;">
+                                <div class="spinner-small"></div>
+                                <span>Analyzing responses...</span>
+                            </div>
+                            
+                            <div class="analysis-content" id="analysisContent">
+                                <!-- Analysis results will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-comparison">
+                        <h3>Quick Comparison</h3>
+                        <div class="comparison-metrics" id="comparisonMetrics">
+                            <!-- Metrics will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-section">
+                        <h3>Recommendation</h3>
+                        <div class="recommendation-content" id="recommendationContent">
+                            <p class="placeholder">Click "Analyze Differences" to get an automated recommendation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div id="history-section" class="section">
+            <div class="history-section">
+                <h2>Previous Comparisons</h2>
+                <div id="history-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
