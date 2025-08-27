@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { ResearchProvider, FileInput, ResearchResponse } from '../interfaces';
+import { processFilesForProvider, formatFilesForPrompt, estimateTokens } from '../utils/file-processor';
 
 export class PerplexityProvider implements ResearchProvider {
   name: 'Perplexity' = 'Perplexity';
@@ -26,8 +27,19 @@ export class PerplexityProvider implements ResearchProvider {
       let fullPrompt = prompt;
       
       if (files && files.length > 0) {
-        const fileContext = files.map(f => `File: ${f.name}\n\n${f.content}`).join('\n\n---\n\n');
-        fullPrompt = `${prompt}\n\nContext files:\n\n${fileContext}`;
+        // Process files intelligently based on size constraints
+        const promptTokens = estimateTokens(prompt);
+        const processed = await processFilesForProvider(files, this.name, promptTokens);
+        
+        if (processed.directFiles.length > 0 || processed.summaries.length > 0) {
+          const fileContext = formatFilesForPrompt(processed);
+          fullPrompt = `${prompt}\n\n${fileContext}`;
+          
+          // Log if files were omitted or summarized
+          if (processed.summaries.length > 0) {
+            console.log(`Perplexity: ${processed.summaries.length} file(s) were summarized due to size constraints`);
+          }
+        }
       }
 
       const selectedModel = model || this.availableModels[0];
@@ -73,7 +85,12 @@ export class PerplexityProvider implements ResearchProvider {
         } else if (error.response?.status === 429) {
           errorMessage = `Rate limit exceeded. Please try again later.`;
         } else if (error.response?.status === 400) {
-          errorMessage = `Bad request: ${error.response.data?.error?.message || 'Invalid request parameters'}`;
+          const errorDetail = error.response.data?.error?.message || 'Invalid request parameters';
+          if (errorDetail.toLowerCase().includes('length') || errorDetail.toLowerCase().includes('token')) {
+            errorMessage = `Content too long: Files were processed but still exceed limits. Try with smaller files or fewer files.`;
+          } else {
+            errorMessage = `Bad request: ${errorDetail}`;
+          }
         } else if (error.response) {
           errorMessage = `API Error (${error.response.status}): ${error.response.data?.error?.message || error.response.statusText}`;
         } else if (error.request) {

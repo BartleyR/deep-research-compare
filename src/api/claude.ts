@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { ResearchProvider, FileInput, ResearchResponse } from '../interfaces';
+import { processFilesForProvider, formatFilesForPrompt, estimateTokens } from '../utils/file-processor';
 
 export class ClaudeProvider implements ResearchProvider {
   name: 'Claude' = 'Claude';
@@ -24,8 +25,19 @@ export class ClaudeProvider implements ResearchProvider {
       let fullPrompt = prompt;
       
       if (files && files.length > 0) {
-        const fileContext = files.map(f => `File: ${f.name}\n\n${f.content}`).join('\n\n---\n\n');
-        fullPrompt = `${prompt}\n\nContext files:\n\n${fileContext}`;
+        // Claude has a much larger context window (200k tokens)
+        const promptTokens = estimateTokens(prompt);
+        const processed = await processFilesForProvider(files, this.name, promptTokens);
+        
+        if (processed.directFiles.length > 0 || processed.summaries.length > 0) {
+          const fileContext = formatFilesForPrompt(processed);
+          fullPrompt = `${prompt}\n\n${fileContext}`;
+          
+          // Log if files were summarized (should be rare for Claude)
+          if (processed.summaries.length > 0) {
+            console.log(`Claude: ${processed.summaries.length} file(s) were summarized (files were very large)`);
+          }
+        }
       }
 
       const selectedModel = model || this.availableModels[0];

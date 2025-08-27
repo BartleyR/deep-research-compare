@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { ResearchProvider, FileInput, ResearchResponse } from '../interfaces';
+import { processFilesForProvider, formatFilesForPrompt, estimateTokens } from '../utils/file-processor';
 
 export class ChatGPTProvider implements ResearchProvider {
   name: 'ChatGPT' = 'ChatGPT';
@@ -34,11 +35,22 @@ export class ChatGPTProvider implements ResearchProvider {
       ];
 
       if (files && files.length > 0) {
-        const fileContext = files.map(f => `File: ${f.name}\n\n${f.content}`).join('\n\n---\n\n');
-        messages.push({
-          role: 'user',
-          content: `Context files:\n\n${fileContext}`
-        });
+        // Process files based on token limits
+        const promptTokens = estimateTokens(prompt);
+        const processed = await processFilesForProvider(files, this.name, promptTokens);
+        
+        if (processed.directFiles.length > 0 || processed.summaries.length > 0) {
+          const fileContext = formatFilesForPrompt(processed);
+          messages.push({
+            role: 'user',
+            content: fileContext
+          });
+          
+          // Log if files were summarized
+          if (processed.summaries.length > 0) {
+            console.log(`ChatGPT: ${processed.summaries.length} file(s) were summarized due to size constraints`);
+          }
+        }
       }
 
       const selectedModel = model || this.availableModels[0];
