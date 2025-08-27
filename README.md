@@ -2,6 +2,9 @@
 
 A majority voting system for comparing responses from multiple AI research assistants (ChatGPT, Claude, Perplexity, and Gemini).
 
+## AI Note
+This code was created completely with a coding agent.
+
 ## Features
 
 - Submit research prompts to multiple AI providers simultaneously
@@ -10,6 +13,39 @@ A majority voting system for comparing responses from multiple AI research assis
 - Evaluation system with scoring capabilities
 - Preference tracking for responses
 - History of previous comparisons
+
+## Configuring the .env File
+The application requires a `.env` file to store your API keys and configuration settings. Follow these steps:
+
+1. Create a new `.env` file in the project root directory:
+```bash
+cp .env.example .env
+```
+
+Or manually create the file:
+```bash
+touch .env
+```
+
+2. Add your API keys to the `.env` file with the following format:
+```bash
+# Required: At least one API key must be provided
+OPENAI_API_KEY=your-openai-api-key-here
+ANTHROPIC_API_KEY=your-anthropic-api-key-here
+GOOGLE_AI_API_KEY=your-google-ai-api-key-here
+PERPLEXITY_API_KEY=your-perplexity-api-key-here
+
+# Optional: Configure the server port (default is 3000)
+PORT=3000
+```
+
+3. Replace the placeholder values with your actual API keys:
+   - **OPENAI_API_KEY**: Get from [OpenAI Platform](https://platform.openai.com/api-keys)
+   - **ANTHROPIC_API_KEY**: Get from [Anthropic Console](https://console.anthropic.com/)
+   - **GOOGLE_AI_API_KEY**: Get from [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - **PERPLEXITY_API_KEY**: Get from [Perplexity Settings](https://www.perplexity.ai/settings/api)
+
+**Note**: You don't need all API keys - only configure the ones for providers you want to use. The application will automatically skip providers without configured API keys.
 
 ## Setup
 
@@ -69,7 +105,7 @@ npm start
 - **Express Server**: RESTful API for client interaction
 - **Web UI**: Interactive interface for submission and comparison
 
-## Available Models
+## Available Models (as of August 2025)
 
 The system includes the following models for each provider:
 
