@@ -23,10 +23,16 @@ async function handleSubmit(e) {
     e.preventDefault();
     
     const prompt = document.getElementById('prompt').value;
+    const evaluationInstructions = document.getElementById('evaluationInstructions').value;
     const files = document.getElementById('files').files;
     
     const formData = new FormData();
     formData.append('prompt', prompt);
+    
+    // Add evaluation instructions if provided
+    if (evaluationInstructions && evaluationInstructions.trim()) {
+        formData.append('evaluationInstructions', evaluationInstructions.trim());
+    }
     
     // Collect selected providers and their models
     const selectedProviders = [];
@@ -143,6 +149,22 @@ function renderResponseContent(response) {
 function displayResults(comparison) {
     const resultsDiv = document.getElementById('results');
     resultsDiv.style.display = 'block';
+    
+    // Display evaluation instructions if they exist
+    if (comparison.evaluationInstructions) {
+        const instructionsDiv = document.createElement('div');
+        instructionsDiv.className = 'evaluation-instructions-display';
+        instructionsDiv.innerHTML = `
+            <h3>Evaluation Criteria Used:</h3>
+            <p>${comparison.evaluationInstructions}</p>
+        `;
+        
+        // Insert at the beginning of results section
+        const firstChild = resultsDiv.firstElementChild;
+        if (firstChild && !resultsDiv.querySelector('.evaluation-instructions-display')) {
+            resultsDiv.insertBefore(instructionsDiv, firstChild.nextSibling);
+        }
+    }
     
     displaySideBySide(comparison);
     setupIndividualView(comparison);

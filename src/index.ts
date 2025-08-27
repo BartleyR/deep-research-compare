@@ -66,7 +66,7 @@ app.post('/api/research', (req, res, next) => {
   });
 }, async (req, res) => {
   try {
-    const { prompt, models, providers } = req.body;
+    const { prompt, evaluationInstructions, models, providers } = req.body;
     
     if (!prompt) {
       return res.status(400).json({ error: 'Prompt is required' });
@@ -106,7 +106,13 @@ app.post('/api/research', (req, res, next) => {
 
     const selectedProviders = providers ? JSON.parse(providers) : undefined;
     const modelSelections = models ? JSON.parse(models) : undefined;
-    const requestId = await researchService.submitResearch(prompt, fileInputs, modelSelections, selectedProviders);
+    const requestId = await researchService.submitResearch(
+      prompt, 
+      fileInputs, 
+      modelSelections, 
+      selectedProviders,
+      evaluationInstructions
+    );
     res.json({ requestId });
   } catch (error) {
     console.error('Error submitting research:', error);

@@ -115,6 +115,17 @@ PERPLEXITY_API_KEY=your_perplexity_api_key_here</pre>
                 
                 <form id="researchForm">
                     <textarea id="prompt" placeholder="Enter your research prompt..." required></textarea>
+                    
+                    <div class="evaluation-instructions">
+                        <label for="evaluationInstructions">
+                            <span class="label-text">Evaluation Instructions (optional)</span>
+                            <span class="help-text">Provide specific criteria or focus areas for the research</span>
+                        </label>
+                        <textarea id="evaluationInstructions" 
+                                placeholder="Example: Focus on technical accuracy, provide code examples, cite sources, compare different approaches..."
+                                rows="3"></textarea>
+                    </div>
+                    
                     <div class="file-input">
                         <label for="files">Upload context files (optional):</label>
                         <input type="file" id="files" multiple />

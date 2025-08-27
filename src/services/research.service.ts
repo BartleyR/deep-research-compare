@@ -32,7 +32,13 @@ export class ResearchService {
     return providers;
   }
 
-  async submitResearch(prompt: string, files?: FileInput[], modelSelections?: Record<string, string>, selectedProviders?: string[]): Promise<string> {
+  async submitResearch(
+    prompt: string, 
+    files?: FileInput[], 
+    modelSelections?: Record<string, string>, 
+    selectedProviders?: string[],
+    evaluationInstructions?: string
+  ): Promise<string> {
     const requestId = uuidv4();
     const request: ResearchRequest = {
       id: requestId,
@@ -41,20 +47,27 @@ export class ResearchService {
       createdAt: new Date()
     };
 
+    // Combine prompt with evaluation instructions if provided
+    let enhancedPrompt = prompt;
+    if (evaluationInstructions) {
+      enhancedPrompt = `${prompt}\n\n## Evaluation Criteria:\n${evaluationInstructions}`;
+    }
+
     // Filter providers based on selection
     const providersToUse = selectedProviders 
       ? this.providers.filter(p => selectedProviders.includes(p.name))
       : this.providers;
 
     const responsePromises = providersToUse.map(provider => 
-      provider.generateResponse(prompt, files, modelSelections?.[provider.name])
+      provider.generateResponse(enhancedPrompt, files, modelSelections?.[provider.name])
     );
 
     const responses = await Promise.all(responsePromises);
 
     const comparison: ResearchComparison = {
       requestId,
-      responses
+      responses,
+      evaluationInstructions
     };
 
     this.researchStore.set(requestId, comparison);
@@ -166,7 +179,7 @@ export class ResearchService {
       };
     }
 
-    const analysisPrompt = this.buildAnalysisPrompt(responses);
+    const analysisPrompt = this.buildAnalysisPrompt(responses, comparison.evaluationInstructions);
     
     try {
       const analysisResponse = await analysisProvider.generateResponse(analysisPrompt);
@@ -211,7 +224,7 @@ export class ResearchService {
     };
   }
 
-  private buildAnalysisPrompt(responses: ResearchResponse[]): string {
+  private buildAnalysisPrompt(responses: ResearchResponse[], evaluationInstructions?: string): string {
     const responsesText = responses.map((r, i) => 
       `## Response ${i + 1}: ${r.provider} (${r.model || 'default model'})
 ${r.content}
@@ -219,8 +232,13 @@ ${r.content}
 ---`
     ).join('\n\n');
 
-    return `Please analyze these research responses and provide a detailed comparison. Focus on:
-
+    let analysisPrompt = `Please analyze these research responses and provide a detailed comparison.`;
+    
+    if (evaluationInstructions) {
+      analysisPrompt += `\n\n**User-Specified Evaluation Criteria:**\n${evaluationInstructions}\n\nPlease prioritize these criteria in your analysis.`;
+    }
+    
+    analysisPrompt += `\n\n**General Analysis Guidelines:**
 1. **Content Quality**: Which response is most comprehensive, accurate, and well-structured?
 2. **Unique Insights**: What unique information or perspectives does each response provide?
 3. **Strengths & Weaknesses**: Key strengths and weaknesses of each response
@@ -231,6 +249,8 @@ ${r.content}
 ${responsesText}
 
 Please provide a structured analysis with clear sections for each comparison criteria.`;
+
+    return analysisPrompt;
   }
 
   private generateRecommendation(responses: ResearchResponse[], metrics: any): string {

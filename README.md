@@ -9,27 +9,42 @@ This code was created completely with a coding agent.
 
 - Submit research prompts to multiple AI providers simultaneously
 - Upload context files for enhanced research
+- Provide custom evaluation instructions to guide comparison
 - Side-by-side comparison of responses
-- Evaluation system with scoring capabilities
-- Preference tracking for responses
+- Automated analysis and recommendations
 - History of previous comparisons
 
-## Configuring the .env File
-The application requires a `.env` file to store your API keys and configuration settings. Follow these steps:
+## Setup
 
-1. Create a new `.env` file in the project root directory:
+### Prerequisites
+- **Node.js** (v16 or higher) - [Download from nodejs.org](https://nodejs.org/)
+- **npm** (comes with Node.js) or **yarn** - [Install yarn](https://yarnpkg.com/getting-started/install)
+- At least one API key from the supported providers (see below)
+
+### Installation
+
+1. **Clone the repository and install dependencies:**
+```bash
+git clone <repository-url>
+cd deep-research-compare
+npm install
+```
+
+2. **Configure API Keys:**
+
+Create a `.env` file in the project root:
 ```bash
 cp .env.example .env
 ```
 
-Or manually create the file:
+Or create it manually:
 ```bash
 touch .env
 ```
 
-2. Add your API keys to the `.env` file with the following format:
+3. **Add your API keys to the `.env` file:**
 ```bash
-# Required: At least one API key must be provided
+# At least one API key is required
 OPENAI_API_KEY=your-openai-api-key-here
 ANTHROPIC_API_KEY=your-anthropic-api-key-here
 GOOGLE_AI_API_KEY=your-google-ai-api-key-here
@@ -39,31 +54,14 @@ PERPLEXITY_API_KEY=your-perplexity-api-key-here
 PORT=3000
 ```
 
-3. Replace the placeholder values with your actual API keys:
-   - **OPENAI_API_KEY**: Get from [OpenAI Platform](https://platform.openai.com/api-keys)
-   - **ANTHROPIC_API_KEY**: Get from [Anthropic Console](https://console.anthropic.com/)
-   - **GOOGLE_AI_API_KEY**: Get from [Google AI Studio](https://aistudio.google.com/app/apikey)
-   - **PERPLEXITY_API_KEY**: Get from [Perplexity Settings](https://www.perplexity.ai/settings/api)
+### Where to Get API Keys
 
-**Note**: You don't need all API keys - only configure the ones for providers you want to use. The application will automatically skip providers without configured API keys.
+- **OpenAI (ChatGPT)**: [OpenAI Platform](https://platform.openai.com/api-keys)
+- **Anthropic (Claude)**: [Anthropic Console](https://console.anthropic.com/)
+- **Google (Gemini)**: [Google AI Studio](https://aistudio.google.com/app/apikey)
+- **Perplexity**: [Perplexity Settings](https://www.perplexity.ai/settings/api)
 
-## Setup
-
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Create a `.env` file based on `.env.example`:
-```bash
-cp .env.example .env
-```
-
-3. Add your API keys to the `.env` file:
-- `OPENAI_API_KEY` - For ChatGPT
-- `ANTHROPIC_API_KEY` - For Claude
-- `GOOGLE_AI_API_KEY` - For Gemini
-- `PERPLEXITY_API_KEY` - For Perplexity
+**Note**: You only need to configure API keys for the providers you want to use. The application will automatically detect and use only the configured providers.
 
 ## Running the Application
 
@@ -80,15 +78,23 @@ npm start
 
 ## Usage
 
-1. Open your browser to `http://localhost:3000`
-2. Enter your research prompt in the text area
-3. Optionally upload context files
-4. Click "Submit to All Researchers"
-5. Wait for responses from all providers
-6. Compare responses using:
-   - Side-by-side view
-   - Individual provider view
-   - Evaluation tab for scoring and preferences
+1. **Start the application** and open your browser to `http://localhost:3000`
+
+2. **Configuration Check**: The Configuration tab shows which API providers are available based on your `.env` file. You can test each connection individually.
+
+3. **Submit Research**:
+   - Enter your research prompt in the text area
+   - (Optional) Add evaluation instructions to guide how responses should be compared
+   - (Optional) Upload context files (text files, code, documentation, etc.)
+   - Select which providers to query
+   - Click "Submit to All Researchers"
+
+4. **Review Results**:
+   - **Side-by-side view**: Compare all responses at once
+   - **Individual view**: Focus on one provider's response
+   - **Evaluation tab**: Get automated analysis and recommendations
+
+5. **History**: Access previous research comparisons from the History tab
 
 ## API Endpoints
 

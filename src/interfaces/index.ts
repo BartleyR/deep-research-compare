@@ -22,12 +22,14 @@ export interface ResearchRequest {
   id: string;
   prompt: string;
   files?: FileInput[];
+  evaluationInstructions?: string;
   createdAt: Date;
 }
 
 export interface ResearchComparison {
   requestId: string;
   responses: ResearchResponse[];
+  evaluationInstructions?: string;
   evaluations?: {
     criteria: string;
     scores: Record<string, number>;

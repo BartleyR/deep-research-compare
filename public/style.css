@@ -47,6 +47,45 @@ h1 {
     resize: vertical;
 }
 
+.evaluation-instructions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.evaluation-instructions label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.evaluation-instructions .label-text {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.evaluation-instructions .help-text {
+    font-size: 13px;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+#evaluationInstructions {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+#evaluationInstructions:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
 .file-input {
     display: flex;
     flex-direction: column;
@@ -94,6 +133,26 @@ button:hover {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     margin-bottom: 30px;
+}
+
+.evaluation-instructions-display {
+    background: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.evaluation-instructions-display h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.evaluation-instructions-display p {
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
 }
 
 .tabs {
