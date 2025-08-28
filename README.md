@@ -3,7 +3,7 @@
 A majority voting system for comparing responses from multiple AI research assistants (ChatGPT, Claude, Perplexity, and Gemini).
 
 ## AI Note
-This code was created completely with a coding agent.
+This code was created completely with a coding agent. Use it with that in mind.
 
 ## Features
 
