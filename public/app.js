@@ -23,16 +23,10 @@ async function handleSubmit(e) {
     e.preventDefault();
     
     const prompt = document.getElementById('prompt').value;
-    const evaluationInstructions = document.getElementById('evaluationInstructions').value;
     const files = document.getElementById('files').files;
     
     const formData = new FormData();
     formData.append('prompt', prompt);
-    
-    // Add evaluation instructions if provided
-    if (evaluationInstructions && evaluationInstructions.trim()) {
-        formData.append('evaluationInstructions', evaluationInstructions.trim());
-    }
     
     // Collect selected providers and their models
     const selectedProviders = [];
@@ -150,22 +144,6 @@ function displayResults(comparison) {
     const resultsDiv = document.getElementById('results');
     resultsDiv.style.display = 'block';
     
-    // Display evaluation instructions if they exist
-    if (comparison.evaluationInstructions) {
-        const instructionsDiv = document.createElement('div');
-        instructionsDiv.className = 'evaluation-instructions-display';
-        instructionsDiv.innerHTML = `
-            <h3>Evaluation Criteria Used:</h3>
-            <p>${comparison.evaluationInstructions}</p>
-        `;
-        
-        // Insert at the beginning of results section
-        const firstChild = resultsDiv.firstElementChild;
-        if (firstChild && !resultsDiv.querySelector('.evaluation-instructions-display')) {
-            resultsDiv.insertBefore(instructionsDiv, firstChild.nextSibling);
-        }
-    }
-    
     displaySideBySide(comparison);
     setupIndividualView(comparison);
     displayEvaluations(comparison);
@@ -279,6 +257,7 @@ async function performAutoAnalysis(requestId) {
     const contentDiv = document.getElementById('analysisContent');
     const metricsDiv = document.getElementById('comparisonMetrics');
     const recommendationDiv = document.getElementById('recommendationContent');
+    const evaluationInstructions = document.getElementById('evaluationInstructions').value;
     
     // Show loading state
     analyzeBtn.disabled = true;
@@ -288,9 +267,15 @@ async function performAutoAnalysis(requestId) {
     contentDiv.innerHTML = '';
     
     try {
+        const body = {};
+        if (evaluationInstructions && evaluationInstructions.trim()) {
+            body.evaluationInstructions = evaluationInstructions.trim();
+        }
+        
         const response = await fetch(`/api/research/${requestId}/analyze`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
         });
         
         if (!response.ok) throw new Error('Failed to analyze responses');

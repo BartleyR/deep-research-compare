@@ -66,7 +66,7 @@ app.post('/api/research', (req, res, next) => {
   });
 }, async (req, res) => {
   try {
-    const { prompt, evaluationInstructions, models, providers } = req.body;
+    const { prompt, models, providers } = req.body;
     
     if (!prompt) {
       return res.status(400).json({ error: 'Prompt is required' });
@@ -110,8 +110,7 @@ app.post('/api/research', (req, res, next) => {
       prompt, 
       fileInputs, 
       modelSelections, 
-      selectedProviders,
-      evaluationInstructions
+      selectedProviders
     );
     res.json({ requestId });
   } catch (error) {
@@ -181,13 +180,14 @@ app.post('/api/research/:id/preference', (req, res) => {
 
 app.post('/api/research/:id/analyze', async (req, res) => {
   try {
+    const { evaluationInstructions } = req.body;
     const comparison = researchService.getResearchComparison(req.params.id);
     
     if (!comparison) {
       return res.status(404).json({ error: 'Research not found' });
     }
 
-    const analysis = await researchService.analyzeResponses(comparison);
+    const analysis = await researchService.analyzeResponses(comparison, evaluationInstructions);
     res.json(analysis);
   } catch (error) {
     console.error('Error analyzing responses:', error);

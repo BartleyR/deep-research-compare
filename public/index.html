@@ -115,17 +115,6 @@ PERPLEXITY_API_KEY=your_perplexity_api_key_here</pre>
                 
                 <form id="researchForm">
                     <textarea id="prompt" placeholder="Enter your research prompt..." required></textarea>
-                    
-                    <div class="evaluation-instructions">
-                        <label for="evaluationInstructions">
-                            <span class="label-text">Evaluation Instructions (optional)</span>
-                            <span class="help-text">Provide specific criteria or focus areas for the research</span>
-                        </label>
-                        <textarea id="evaluationInstructions" 
-                                placeholder="Example: Focus on technical accuracy, provide code examples, cite sources, compare different approaches..."
-                                rows="3"></textarea>
-                    </div>
-                    
                     <div class="file-input">
                         <label for="files">Upload context files (optional):</label>
                         <input type="file" id="files" multiple />
@@ -187,6 +176,18 @@ PERPLEXITY_API_KEY=your_perplexity_api_key_here</pre>
                 </div>
 
                 <div id="evaluation" class="tab-content">
+                    <div class="evaluation-instructions-section">
+                        <h3>Evaluation Instructions</h3>
+                        <div class="evaluation-instructions">
+                            <label for="evaluationInstructions">
+                                <span class="help-text">Provide specific criteria or focus areas for comparing the responses</span>
+                            </label>
+                            <textarea id="evaluationInstructions" 
+                                    placeholder="Example: Focus on technical accuracy, provide code examples, cite sources, compare different approaches..."
+                                    rows="3"></textarea>
+                        </div>
+                    </div>
+                    
                     <div class="auto-analysis-section">
                         <div class="analysis-header">
                             <h3>Automatic Analysis</h3>

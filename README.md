@@ -84,7 +84,6 @@ npm start
 
 3. **Submit Research**:
    - Enter your research prompt in the text area
-   - (Optional) Add evaluation instructions to guide how responses should be compared
    - (Optional) Upload context files (text files, code, documentation, etc.)
    - Select which providers to query
    - Click "Submit to All Researchers"
@@ -92,7 +91,9 @@ npm start
 4. **Review Results**:
    - **Side-by-side view**: Compare all responses at once
    - **Individual view**: Focus on one provider's response
-   - **Evaluation tab**: Get automated analysis and recommendations
+   - **Evaluation tab**: 
+     - Add custom evaluation instructions to guide the analysis
+     - Get automated analysis and recommendations based on your criteria
 
 5. **History**: Access previous research comparisons from the History tab
 

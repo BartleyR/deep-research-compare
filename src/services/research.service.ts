@@ -36,8 +36,7 @@ export class ResearchService {
     prompt: string, 
     files?: FileInput[], 
     modelSelections?: Record<string, string>, 
-    selectedProviders?: string[],
-    evaluationInstructions?: string
+    selectedProviders?: string[]
   ): Promise<string> {
     const requestId = uuidv4();
     const request: ResearchRequest = {
@@ -47,27 +46,20 @@ export class ResearchService {
       createdAt: new Date()
     };
 
-    // Combine prompt with evaluation instructions if provided
-    let enhancedPrompt = prompt;
-    if (evaluationInstructions) {
-      enhancedPrompt = `${prompt}\n\n## Evaluation Criteria:\n${evaluationInstructions}`;
-    }
-
     // Filter providers based on selection
     const providersToUse = selectedProviders 
       ? this.providers.filter(p => selectedProviders.includes(p.name))
       : this.providers;
 
     const responsePromises = providersToUse.map(provider => 
-      provider.generateResponse(enhancedPrompt, files, modelSelections?.[provider.name])
+      provider.generateResponse(prompt, files, modelSelections?.[provider.name])
     );
 
     const responses = await Promise.all(responsePromises);
 
     const comparison: ResearchComparison = {
       requestId,
-      responses,
-      evaluationInstructions
+      responses
     };
 
     this.researchStore.set(requestId, comparison);
@@ -155,7 +147,7 @@ export class ResearchService {
     }
   }
 
-  async analyzeResponses(comparison: ResearchComparison): Promise<any> {
+  async analyzeResponses(comparison: ResearchComparison, evaluationInstructions?: string): Promise<any> {
     const responses = comparison.responses.filter(r => r.content && !r.error);
     
     if (responses.length < 2) {
@@ -179,7 +171,7 @@ export class ResearchService {
       };
     }
 
-    const analysisPrompt = this.buildAnalysisPrompt(responses, comparison.evaluationInstructions);
+    const analysisPrompt = this.buildAnalysisPrompt(responses, evaluationInstructions);
     
     try {
       const analysisResponse = await analysisProvider.generateResponse(analysisPrompt);
